@@ -1,6 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from threading import Thread, Event
- 
+import signal
+
 class Scheduler(Thread):
     ''' Controls scheduling for py_curator
     
