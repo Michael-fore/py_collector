@@ -5,11 +5,18 @@ any source.
 
 It utilizes two main components, the `Collector` and the `Scheduler`. 
 
+Checkout the imports to run the examples
+[here](/examples)
+
 ## Code Examples
 
-| Data | Code |
-|--- | :---: |
-|Collect Weather Data into SQL Alchemy Every Hour|
+<table>
+<tr><th>Data</th><th>Code</th></tr>
+<tr>
+<td>Collect Weather Data into SQL Alchemy </td>
+<td>
+<pre>
+
 ```python
 class Weather(Collector):
     start_time = datetime.now()#to start immediatly
@@ -41,10 +48,17 @@ class Weather(Collector):
         if it only returns True, then it will just upload 
         on schedule.'''
         return True
-```|
-|Collect only new Energy Data into a csv every minute|
+```
+</pre>
+</td>
+
+<tr>
+<td>Collect Energy Data into a CSV every hour </td>
+<td>
+<pre>
+
 ```python
-class Weather(Collector):
+class Energy(Collector):
     start_time = datetime.now()#to start immediatly
 
     scheduler = Scheduler(minutes=1, #every minute
@@ -57,7 +71,7 @@ class Weather(Collector):
     def upload(self):
         ''' Runs on schedule, and will only run if is_new 
             returns true'''
-        df = pd.read_html(self.get_site().text)[0]
+        df = pd.read_html(self.get_site.text)[0]
         title = 'ercot_dam_clearing_'+self.last_update.strftime('%m_%d_%Y')+'.csv'
         file = open(title,'w')
         df.to_csv(file)
@@ -92,8 +106,17 @@ class Weather(Collector):
         last_change = soup.find('div',attrs={'class':'schedTime rightAlign'})
         last_change = last_change.text.split('Time:')[1].lstrip()
         return datetime.strptime(last_change,'%b %d, %Y %H:%M')
-```|
-|Collect TikTok data into Mongo DB|
+
+```
+</pre>
+</td>
+<tr>
+
+<tr>
+<td>Collect TikTok Data into a MongoDB every day </td>
+<td>
+<pre>
+
 ```python
 
 class TikTokUser(MongoModel):
@@ -154,5 +177,11 @@ class TikTok(Collector):
             "sec-gpc": "1"
             }
         return requests.get(f'https://www.tiktok.com/@{user}?lang=en',headers=headers)
-```|
-|Send email with Data| Test|
+    
+
+```
+</pre>
+</td>
+
+<tr>
+</table>
