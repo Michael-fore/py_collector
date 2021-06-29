@@ -1,1 +1,1 @@
-from py_collector import Scheduler, Collector, Manager
+from py_collector.py_collector import Scheduler, Collector, Manager
