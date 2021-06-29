@@ -6,9 +6,8 @@ try:
     from pymodm import MongoModel, fields
     from bs4 import BeautifulSoup
     import requests
-    import brotli
 except:
-    raise ImportError('Please make usre pymongo, pymodm, bs4, requsts, and brotli\
+    raise ImportError('Please make sure pymongo, pymodm, bs4,and requests\
         are installed to run this example')
 
 connect("mongodb://localhost:27017/myDatabase", alias="my-app")
