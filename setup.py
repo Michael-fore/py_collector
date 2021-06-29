@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="py_collector",
-    version="0.0.1",
+    version="0.0.21",
     author="Michael Watson-Fore",
     author_email="michael-fore@sbcglobal.net",
     description="A small data collection package for small to medium data collection efforts.",
@@ -24,6 +24,6 @@ setuptools.setup(
         "Environment :: Console"
     ],
     package_dir={"": "src"},
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(where="src"),
     python_requires=">=3.2",
 )
