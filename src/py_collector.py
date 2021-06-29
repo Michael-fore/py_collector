@@ -4,7 +4,7 @@ from threading import Thread, Event
 class Scheduler(Thread):
     ''' Controls scheduling for py_curator
     
-    Based havily on Timer implementation here
+    Based heavily on Timer implementation here
     https://github.com/python/cpython/blob/3.9/Lib/threading.py
     '''
     initial_run = True
