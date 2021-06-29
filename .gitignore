@@ -2,6 +2,6 @@
 venv/
 .ipynb_checkpoints/
 py_collecor.ipynb
-
+.vscode
 __pycache__/*
 */__pycache__

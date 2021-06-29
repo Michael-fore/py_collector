@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="py_collector",
-    version="0.0.22",
+    version="0.0.23",
     author="Michael Watson-Fore",
     author_email="michael-fore@sbcglobal.net",
     description="A small data collection package for small to medium data collection efforts.",

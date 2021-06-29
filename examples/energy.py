@@ -1,49 +1,13 @@
-# Py Collector
+from datetime import datetime
+from py_collector import Scheduler, Manager, Collector
+try:
+    import requests
+    from bs4 import BeautifulSoup
+    import pandas as pd
+except:
+    raise ImportError('Please install requests, BeautifulSoup4, and pandas to run this example')
 
-Py Collector is a simple, reliable, DB agnostic framework for consistently harvesting data from
-any source.
-
-It utilizes two main components, the `Collector` and the `Scheduler`. 
-
-## Code Examples
-
-| Data | Code |
-|--- | :---: |
-|Collect Weather Data into SQL Alchemy Every Hour|```python
-class Weather(Collector):
-    start_time = datetime.now()#to start immediatly
-    scheduler = Scheduler(days=1/24, 
-                        count=1, 
-                        separator=1,
-                        start_time = start_time)
-    
-    def upload(self):
-        ''' Runs on schedule, and will only run if is_new 
-            returns true'''
-        r = requests.get('https://api.weather.gov/gridpoints/FWD/59,23/forecast')
-        data = r.json()['properties']['periods']
-        points = []
-        for i in data:
-            data_point = WeatherDataPoint(
-                start_date=datetime.fromisoformat(i['startTime']),
-                end_date=datetime.fromisoformat(i['endTime']),
-                temp=i['temperature'],
-                windspeed=i['windSpeed']
-            )
-            points.append(data_point)
-
-        session.add_all(points)
-        session.commit()
-
-    def is_new(self):
-        '''Evaluates if the data should be uploaded,
-        if it only returns True, then it will just upload 
-        on schedule.'''
-        return True
-```|
-|Collect only new Energy Data into a csv every minute|```python
-
-class Weather(Collector):
+class Energy(Collector):
     start_time = datetime.now()#to start immediatly
 
     scheduler = Scheduler(minutes=1, #every minute
@@ -56,7 +20,7 @@ class Weather(Collector):
     def upload(self):
         ''' Runs on schedule, and will only run if is_new 
             returns true'''
-        df = pd.read_html(self.get_site().text)[0]
+        df = pd.read_html(self.get_site.text)[0]
         title = 'ercot_dam_clearing_'+self.last_update.strftime('%m_%d_%Y')+'.csv'
         file = open(title,'w')
         df.to_csv(file)
@@ -91,6 +55,6 @@ class Weather(Collector):
         last_change = soup.find('div',attrs={'class':'schedTime rightAlign'})
         last_change = last_change.text.split('Time:')[1].lstrip()
         return datetime.strptime(last_change,'%b %d, %Y %H:%M')
-```|
-|Collect Housing data into Mongo DB| Test|
-|Send email with Data| Test|
+
+if __name__ =='__main__':
+    Energy().monitor()
