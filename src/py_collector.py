@@ -28,7 +28,7 @@ class Scheduler(Thread):
                                seconds=seconds, 
                                milliseconds=milliseconds).total_seconds()
     
-    def cancel(self):
+    def cancel(self, signum, frame):
         #self.finished.set()
         self.alive = False
         
@@ -69,3 +69,22 @@ class Collector:
         
     def monitor(self)->None:
         self.scheduler.schedule(self.orchestrate)
+
+class Manager:
+    
+    def __init__(self,  *args):
+        self.collectors = args
+        
+    def verify_collectors(self):
+        if len(self.collectors)==0:
+            raise RuntimeError('No Collectors were provided!')
+            
+        for i in self.collectors:
+            if not issubclass(i,Collector):
+                raise TypeError(f'Was expecing class to subtype Collector, got {i} instead')
+                
+    def start(self):
+        self.verify_collectors()
+        for i in self.collectors:
+            Thread(target=i().monitor, daemon=True).start()
+    

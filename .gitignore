@@ -2,3 +2,6 @@
 venv/
 .ipynb_checkpoints/
 py_collecor.ipynb
+
+__pycache__/*
+*/__pycache__

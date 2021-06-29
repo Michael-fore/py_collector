@@ -15,12 +15,15 @@ setuptools.setup(
     project_urls={
         "Bug Tracker": "https://github.com/Michael-fore/py_collector/issues",
     },
+     keywords='dataharvesting, datascraping, scraping, datacollection',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console"
     ],
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    packages=setuptools.find_packages(),
     python_requires=">=3.2",
 )

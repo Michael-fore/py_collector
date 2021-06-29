@@ -1,0 +1,7 @@
+LICENSE
+README.md
+setup.py
+src/py_collector.egg-info/PKG-INFO
+src/py_collector.egg-info/SOURCES.txt
+src/py_collector.egg-info/dependency_links.txt
+src/py_collector.egg-info/top_level.txt

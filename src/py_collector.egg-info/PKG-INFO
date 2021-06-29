@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: py-collector
+Version: 0.0.1
+Summary: A small data collection package for small to medium data collection efforts.
+Home-page: https://github.com/Michael-fore/py_collector
+Author: Michael Watson-Fore
+Author-email: michael-fore@sbcglobal.net
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/Michael-fore/py_collector/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.2
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Py Collector
+
+Py Collector is a simple, reliable, DB agnostic framework for consistently harvesting data from
+any source.
+
+It utilizes two main components, the `Collector` and the `Scheduler`. 
+
+## Code Examples
+
+| Data | Code |
+|--- | :---: |
+|Collect Weather Data into SQL Alchemy| Test|
+|Collect Energy Data into a csv| Test|
+|Collect Housing data into Mongo DB| Test|
+|Send email with Data| Test|
+
