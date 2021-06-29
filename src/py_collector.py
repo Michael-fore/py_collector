@@ -1,0 +1,67 @@
+from datetime import datetime, timezone, timedelta
+from threading import Thread, Event
+
+class Scheduler(Thread):
+    ''' Controls scheduling for py_curator
+    
+    Based havily on Timer implementation here
+    https://github.com/python/cpython/blob/3.9/Lib/threading.py
+    '''
+    initial_run = True
+    
+    def __init__(self, start_time=None, milliseconds=0, seconds=0, days=0,minutes=0, weeks=0,
+                 timezone = None, count=1, separator=1 ):
+        
+        Thread.__init__(self)
+        self.finished = Event()
+        self.count = count
+        self.separator_delta =separator
+        start_time = datetime.now() if start_time == None else start_time
+        
+        self.start_diff = abs(round((datetime.now() - start_time).total_seconds(),3))
+        self.delta = timedelta(weeks=weeks, 
+                               days=days, 
+                               minutes=minutes, 
+                               seconds=seconds, 
+                               milliseconds=milliseconds).total_seconds()
+    
+    def cancel(self):
+        self.finished.set()
+        
+    def init_run(self, func):
+        ''' initial run to handle the wait'''
+        if self.initial_run:
+            self.initial_run = False
+            self.finished.wait(self.start_diff)
+            func()
+            
+    def schedule(self, func):
+        ''' takes in a last run datetime, if the specified time interval + last run = 
+        _now, return true, otherwise false'''
+        
+        self.init_run(func)
+            
+        self.finished.wait(self.delta)
+        for i in range(self.count):
+            func()
+            self.finished.wait(self.separator_delta)
+            
+        self.schedule(func)
+
+class Collector:
+    
+    def upload(self)->None:
+        ''' What errors should be here?'''
+        raise NotImplementedError('Please see documentation for implementation example')
+    
+    def is_new(self)->bool:
+        raise NotImplementedError('Please see documentation for implementation example')
+        
+    def orchestrate(self)->None:
+        if self.is_new():
+            self.upload()
+            self.last_run = datetime.now()
+        
+    def monitor(self)->None:
+        
+        self.scheduler.schedule(self.orchestrate)
