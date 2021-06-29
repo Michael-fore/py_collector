@@ -51,9 +51,8 @@ class Weather(Collector):
 ```
 </pre>
 </td>
-
 <tr>
-<td>Collect Energy Data into a CSV every hour </td>
+<td>Collect Energy Data into a CSV every minute </td>
 <td>
 <pre>
 
@@ -111,14 +110,12 @@ class Energy(Collector):
 </pre>
 </td>
 <tr>
-
 <tr>
 <td>Collect TikTok Data into a MongoDB every day </td>
 <td>
 <pre>
 
 ```python
-
 class TikTokUser(MongoModel):
     username = fields.CharField()
     followers = fields.CharField()
