@@ -43,7 +43,7 @@ class Scheduler(Thread):
         ''' takes in a last run datetime, if the specified time interval + last run = 
         _now, return true, otherwise false'''
         
-        while alive:
+        while self.alive:
             self.init_run(func)
 
             self.finished.wait(self.delta)
