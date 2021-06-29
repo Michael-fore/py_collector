@@ -9,7 +9,8 @@ It utilizes two main components, the `Collector` and the `Scheduler`.
 
 | Data | Code |
 |--- | :---: |
-|Collect Weather Data into SQL Alchemy Every Hour|```python
+|Collect Weather Data into SQL Alchemy Every Hour|
+```python
 class Weather(Collector):
     start_time = datetime.now()#to start immediatly
     scheduler = Scheduler(days=1/24, 
@@ -41,8 +42,8 @@ class Weather(Collector):
         on schedule.'''
         return True
 ```|
-|Collect only new Energy Data into a csv every minute|```python
-
+|Collect only new Energy Data into a csv every minute|
+```python
 class Weather(Collector):
     start_time = datetime.now()#to start immediatly
 
@@ -92,7 +93,8 @@ class Weather(Collector):
         last_change = last_change.text.split('Time:')[1].lstrip()
         return datetime.strptime(last_change,'%b %d, %Y %H:%M')
 ```|
-|Collect TikTok data into Mongo DB|```python
+|Collect TikTok data into Mongo DB|
+```python
 
 class TikTokUser(MongoModel):
     username = fields.CharField()
