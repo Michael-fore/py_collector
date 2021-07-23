@@ -1,6 +1,6 @@
 # Py Collector
 
-Py Collector is a simple, reliable, DB agnostic framework for consistently harvesting data from
+Py Collector is a simple, reliable, DB agnostic framework for consistently collecting data from
 any source.
 
 It utilizes two main components, the `Collector` and the `Scheduler`. 
