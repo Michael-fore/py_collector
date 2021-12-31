@@ -1,6 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from threading import Thread, Event
 import signal
+import os
 
 class Scheduler(Thread):
     ''' Controls scheduling for py_curator
@@ -14,7 +15,11 @@ class Scheduler(Thread):
     def __init__(self, start_time=None, milliseconds=0, seconds=0, days=0,minutes=0, weeks=0,
                  timezone = None, count=1, separator=1 ):
         
-        signal.signal(signal.SIGALRM, self.cancel)
+        s_type = signal.SIGALRM
+        if os.name =='nt':
+            s_type = signal.SIGABRT
+        
+        signal.signal(s_type, self.cancel)
         Thread.__init__(self)
         self.finished = Event()
         self.count = count

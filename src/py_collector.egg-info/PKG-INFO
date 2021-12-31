@@ -7,21 +7,6 @@ Author: Michael Watson-Fore
 Author-email: michael-fore@sbcglobal.net
 License: UNKNOWN
 Project-URL: Bug Tracker, https://github.com/Michael-fore/py_collector/issues
-Description: # Py Collector
-        
-        Py Collector is a simple, reliable, DB agnostic framework for consistently harvesting data from
-        any source.
-        
-        It utilizes two main components, the `Collector` and the `Scheduler`. 
-        
-        ## Code Examples
-        
-        | Data | Code |
-        |--- | :---: |
-        |Collect Weather Data into SQL Alchemy| Test|
-        |Collect Energy Data into a csv| Test|
-        |Collect Housing data into Mongo DB| Test|
-        |Send email with Data| Test|
 Keywords: dataharvesting,datascraping,scraping,datacollection
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
@@ -31,3 +16,191 @@ Classifier: Development Status :: 3 - Alpha
 Classifier: Environment :: Console
 Requires-Python: >=3.2
 Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Py Collector
+
+Py Collector is a simple, reliable, DB agnostic framework for consistently collecting data from
+any source.
+
+It utilizes two main components, the `Collector` and the `Scheduler`. 
+
+Checkout the imports to run the examples
+[here](/examples)
+
+## Code Examples
+
+<table>
+<tr><th>Data</th><th>Code</th></tr>
+<tr>
+<td>Collect Weather Data into SQL Alchemy </td>
+<td>
+<pre>
+
+```python
+class Weather(Collector):
+    start_time = datetime.now()#to start immediatly
+    scheduler = Scheduler(days=1/24, 
+                        count=1, 
+                        separator=1,
+                        start_time = start_time)
+    
+    def upload(self):
+        ''' Runs on schedule, and will only run if is_new 
+            returns true'''
+        r = requests.get('https://api.weather.gov/gridpoints/FWD/59,23/forecast')
+        data = r.json()['properties']['periods']
+        points = []
+        for i in data:
+            data_point = WeatherDataPoint(
+                start_date=datetime.fromisoformat(i['startTime']),
+                end_date=datetime.fromisoformat(i['endTime']),
+                temp=i['temperature'],
+                windspeed=i['windSpeed']
+            )
+            points.append(data_point)
+
+        session.add_all(points)
+        session.commit()
+
+    def is_new(self):
+        '''Evaluates if the data should be uploaded,
+        if it only returns True, then it will just upload 
+        on schedule.'''
+        return True
+```
+</pre>
+</td>
+<tr>
+<td>Collect Energy Data into a CSV every minute </td>
+<td>
+<pre>
+
+```python
+class Energy(Collector):
+    start_time = datetime.now()#to start immediatly
+
+    scheduler = Scheduler(minutes=1, #every minute
+                        count=2, #try 3 times
+                        separator=2, #two seconds between tries
+                        start_time = start_time)
+    first_run = True
+    last_update = None
+
+    def upload(self):
+        ''' Runs on schedule, and will only run if is_new 
+            returns true'''
+        df = pd.read_html(self.get_site.text)[0]
+        title = 'ercot_dam_clearing_'+self.last_update.strftime('%m_%d_%Y')+'.csv'
+        file = open(title,'w')
+        df.to_csv(file)
+
+    def is_new(self):
+        '''Evaluates if the data should be uploaded,
+        if it only returns True, then it will just upload 
+        on schedule.'''
+        if self.first_run:
+            #first run load whatever is there
+            self.first_run = False
+            self.last_update = self.get_last_changed()
+            return True
+        else:
+            #if it has changed since we last updated, download
+            last_changed = self.get_last_changed()
+            if self.last_update < last_changed:
+                self.last_update = last_changed
+                return True
+            else:
+                return False
+
+    def get_site(self):
+        return requests.get('http://www.ercot.com/content/cdr/html/actual_loads_of_forecast_zones')
+
+    def soup(self):
+        r = self.get_site()
+        return BeautifulSoup(r.text,'html.parser')
+
+    def get_last_changed(self):
+        soup = self.soup()
+        last_change = soup.find('div',attrs={'class':'schedTime rightAlign'})
+        last_change = last_change.text.split('Time:')[1].lstrip()
+        return datetime.strptime(last_change,'%b %d, %Y %H:%M')
+
+```
+</pre>
+</td>
+<tr>
+<tr>
+<td>Collect TikTok Data into a MongoDB every day </td>
+<td>
+<pre>
+
+```python
+class TikTokUser(MongoModel):
+    username = fields.CharField()
+    followers = fields.CharField()
+    likes = fields.CharField()
+    following = fields.CharField()
+
+    class Meta:
+        write_concern = WriteConcern(j=True)
+        connection_alias = 'my-app'
+
+class TikTok(Collector):
+    start_time = datetime.now() 
+
+    scheduler = Scheduler(days=1, #every date
+                        count=1, #try 1 times
+                        separator=1, #not applicable
+                        start_time = start_time) #start now
+
+    def upload(self):
+        ''' Runs on schedule, and will only run if is_new 
+            returns true'''
+
+        data = self.user_stats('gordonramsayofficial')
+        user = TikTokUser.from_document(data)
+        user.save()
+
+    def is_new(self):
+        '''Evaluates if the data should be uploaded,
+        if it only returns True, then it will just upload 
+        on schedule.'''
+        return True
+    
+    def user_stats(self,user ='gordonramsayofficial'):
+            r = self.user_raw(user)
+            soup = BeautifulSoup(r.text,'html.parser')
+            info = soup.find('h2',attrs={'class':'count-infos'})
+            return {
+                'following':info.find('strong',attrs={'title':'Following'}).text,
+                'followers':info.find('strong',attrs={'title':'Followers'}).text,
+                'likes':info.find('strong',attrs={'title':'Likes'}).text, 
+                'username':user
+            }
+
+    def user_raw(self, user):
+        headers={
+            "authority": "m.tiktok.com",
+            "User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0",
+            "method": "GET",
+            "scheme": "https",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": 'gzip, deflate, utf-8',
+            "accept-language": "en-US,en;q=0.9",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-site",
+            "sec-gpc": "1"
+            }
+        return requests.get(f'https://www.tiktok.com/@{user}?lang=en',headers=headers)
+    
+
+```
+</pre>
+</td>
+
+<tr>
+</table>
+
+
